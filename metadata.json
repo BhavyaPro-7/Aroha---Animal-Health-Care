@@ -1,0 +1,6 @@
+{
+  "name": "AROHA — Continuous Cattle Healthcare for Rural India",
+  "description": "Making accessible, preventive and organized veterinary healthcare available to rural cattle farmers. Better Care. Healthier Cattle. Stronger Rural Communities.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
