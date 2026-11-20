@@ -1,3 +1,47 @@
+export type CareServiceId =
+  | 'urgent-visit'
+  | 'preventive-checkup'
+  | 'follow-up'
+  | 'animal-registration';
+
+export interface CareServiceOption {
+  id: CareServiceId;
+  title: string;
+  shortDesc: string;
+  defaultNote: string;
+}
+
+export interface CattleProfile {
+  id: string;
+  name: string;
+  species: 'Cow' | 'Buffalo';
+  breed: string;
+  tagId: string;
+  stage: string;
+}
+
+export type BookingStatus = 'Scheduled' | 'Completed' | 'Cancelled';
+
+export interface FarmerBooking {
+  id: string;
+  referenceCode: string;
+  serviceId: CareServiceId;
+  serviceTitle: string;
+  cattleId: string;
+  cattleLabel: string;
+  cattleTag: string;
+  dateISO: string;
+  dateLabel: string;
+  timeSlot: string;
+  farmerName: string;
+  phone: string;
+  village: string;
+  district: string;
+  notes: string;
+  status: BookingStatus;
+  createdAt: string;
+}
+
 export interface ChallengeItem {
   number: string;
   title: string;
@@ -12,21 +56,112 @@ export interface ApproachStage {
   description: string;
 }
 
-export interface AnimalRecordSample {
-  id: string;
-  tagId: string;
-  breed: string;
-  nextFollowUp: string;
-  steps: {
-    label: string;
-    detail: string;
-  }[];
-}
-
 export const HERO_IMAGE = '/src/assets/images/hero_farmer_cattle_1794926808222.jpg';
 export const PROBLEM_VET_IMAGE = '/src/assets/images/problem_rural_vet_1794926808998.jpg';
 export const APPROACH_HERD_IMAGE = '/src/assets/images/approach_dairy_herd_1794926809590.jpg';
 export const COMMUNITY_FARMER_IMAGE = '/src/assets/images/community_rural_farmer_1794926809837.jpg';
+
+export const CARE_SERVICES: CareServiceOption[] = [
+  {
+    id: 'urgent-visit',
+    title: 'Veterinary Visit',
+    shortDesc: 'Timely clinical visit when your cow or buffalo needs attention.',
+    defaultNote: '',
+  },
+  {
+    id: 'preventive-checkup',
+    title: 'Preventive Checkup',
+    shortDesc: 'Routine health check, seasonal vaccination, or deworming.',
+    defaultNote: 'Routine preventive checkup and vaccination review.',
+  },
+  {
+    id: 'follow-up',
+    title: 'Post-Treatment Follow-up',
+    shortDesc: 'Scheduled recovery check after an earlier treatment.',
+    defaultNote: 'Post-treatment recovery and appetite follow-up.',
+  },
+  {
+    id: 'animal-registration',
+    title: 'Health Record Setup',
+    shortDesc: 'Start an organized medical history for an animal.',
+    defaultNote: 'Initial animal health baseline and record setup.',
+  },
+];
+
+export const TIME_SLOTS = [
+  '07:00 AM – 10:00 AM',
+  '11:00 AM – 02:00 PM',
+  '03:00 PM – 06:00 PM',
+];
+
+export const QUICK_SYMPTOM_NOTES = [
+  'Reduced feed intake',
+  'Routine vaccination',
+  'Fever or lethargy',
+  'Milk yield drop',
+  'Udder check',
+  'Post-calving check',
+];
+
+export const INITIAL_CATTLE: CattleProfile[] = [
+  {
+    id: 'cattle-1',
+    name: 'Lakshmi',
+    species: 'Cow',
+    breed: 'Gir',
+    tagId: 'IN-RJ-402',
+    stage: 'Lactating',
+  },
+  {
+    id: 'cattle-2',
+    name: 'Gauri',
+    species: 'Buffalo',
+    breed: 'Murrah',
+    tagId: 'IN-GJ-118',
+    stage: 'Mid-Lactation',
+  },
+];
+
+export const INITIAL_BOOKINGS: FarmerBooking[] = [
+  {
+    id: 'bk-seed-1',
+    referenceCode: 'ARH-1042',
+    serviceId: 'preventive-checkup',
+    serviceTitle: 'Preventive Checkup',
+    cattleId: 'cattle-1',
+    cattleLabel: 'Lakshmi (Gir Cow)',
+    cattleTag: 'IN-RJ-402',
+    dateISO: getRelativeDateISO(1),
+    dateLabel: formatDateLabel(getRelativeDateISO(1)),
+    timeSlot: '07:00 AM – 10:00 AM',
+    farmerName: 'Ramesh Patel',
+    phone: '9876543210',
+    village: 'Bhimpur',
+    district: 'Anand, Gujarat',
+    notes: 'Routine preventive checkup and mineral review.',
+    status: 'Scheduled',
+    createdAt: new Date().toISOString(),
+  },
+  {
+    id: 'bk-seed-2',
+    referenceCode: 'ARH-1018',
+    serviceId: 'follow-up',
+    serviceTitle: 'Post-Treatment Follow-up',
+    cattleId: 'cattle-2',
+    cattleLabel: 'Gauri (Murrah Buffalo)',
+    cattleTag: 'IN-GJ-118',
+    dateISO: getRelativeDateISO(-3),
+    dateLabel: formatDateLabel(getRelativeDateISO(-3)),
+    timeSlot: '11:00 AM – 02:00 PM',
+    farmerName: 'Ramesh Patel',
+    phone: '9876543210',
+    village: 'Bhimpur',
+    district: 'Anand, Gujarat',
+    notes: '7-day post-treatment recovery check verified.',
+    status: 'Completed',
+    createdAt: new Date().toISOString(),
+  },
+];
 
 export const CHALLENGES: ChallengeItem[] = [
   {
@@ -56,57 +191,68 @@ export const APPROACH_STAGES: ApproachStage[] = [
     id: 'access',
     number: '01',
     title: 'Timely Veterinary Access',
-    headline: 'Connecting rural farmers with qualified veterinarians without delay.',
+    headline: 'Book qualified veterinary visits directly from your village.',
     description:
-      'Early clinical guidance and coordinated field visits ensure health issues are addressed before they escalate.',
+      'Reach veterinary care early without waiting for an animal to reach an emergency.',
   },
   {
     id: 'preventive',
     number: '02',
     title: 'Preventive Monitoring',
-    headline: 'Routine checkups that protect herd health year-round.',
+    headline: 'Schedule routine checkups and seasonal care on time.',
     description:
-      'Scheduled vaccinations, deworming, and seasonal health reviews shift care from emergency response to prevention.',
+      'Keep vaccinations, deworming, and nutrition reviews organized year-round.',
   },
   {
     id: 'records',
     number: '03',
     title: 'Individual Health Records',
-    headline: 'An organized medical history for every cow and buffalo.',
+    headline: 'Every cow and buffalo keeps its own medical history.',
     description:
-      'Treatments, vaccinations, and checkup notes stay structured per animal for faster, more accurate care.',
+      'Past treatments and checkups stay linked to each animal tag for clear care.',
   },
   {
     id: 'followups',
     number: '04',
     title: 'Structured Follow-ups',
-    headline: 'Consistent post-treatment care until full recovery.',
+    headline: 'Post-treatment recovery tracked until your animal is well.',
     description:
-      'Guided recovery checkpoints help farmers track healing and prevent repeat complications.',
+      'Schedule follow-up visits directly from completed appointments to avoid relapse.',
   },
 ];
 
-export const SAMPLE_RECORDS: AnimalRecordSample[] = [
-  {
-    id: 'gir-402',
-    tagId: 'IN-RJ-402',
-    breed: 'Gir Cow',
-    nextFollowUp: '14 Nov 2026',
-    steps: [
-      { label: 'Preventive Checkup', detail: 'Udder health and nutrition review completed' },
-      { label: 'Immunization', detail: 'Seasonal vaccination logged on schedule' },
-      { label: 'Follow-up Care', detail: 'Post-treatment recovery verified' },
-    ],
-  },
-  {
-    id: 'murrah-118',
-    tagId: 'IN-GJ-118',
-    breed: 'Murrah Buffalo',
-    nextFollowUp: '25 Nov 2026',
-    steps: [
-      { label: 'Early Consultation', detail: 'Prompt veterinary assessment recorded' },
-      { label: 'Deworming Cycle', detail: 'Scheduled dose tracked in profile' },
-      { label: 'Recovery Check', detail: '7-day follow-up completed cleanly' },
-    ],
-  },
-];
+export function getRelativeDateISO(offsetDays: number): string {
+  const d = new Date();
+  d.setDate(d.getDate() + offsetDays);
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function formatDateLabel(isoDate: string): string {
+  const [y, m, d] = isoDate.split('-').map(Number);
+  if (!y || !m || !d) return isoDate;
+  const date = new Date(y, m - 1, d);
+  return date.toLocaleDateString('en-IN', {
+    weekday: 'short',
+    day: 'numeric',
+    month: 'short',
+  });
+}
+
+export function getUpcomingBookingDays(count = 7): { iso: string; dayLabel: string; dateNum: string; monthLabel: string }[] {
+  const days = [];
+  for (let i = 0; i < count; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() + i);
+    const iso = getRelativeDateISO(i);
+    days.push({
+      iso,
+      dayLabel: i === 0 ? 'Today' : i === 1 ? 'Tomorrow' : d.toLocaleDateString('en-IN', { weekday: 'short' }),
+      dateNum: String(d.getDate()).padStart(2, '0'),
+      monthLabel: d.toLocaleDateString('en-IN', { month: 'short' }),
+    });
+  }
+  return days;
+}

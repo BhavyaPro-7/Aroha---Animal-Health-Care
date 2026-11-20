@@ -13,7 +13,7 @@ export function ProblemSection() {
           <div className="lg:col-span-5 flex flex-col gap-6">
             <div>
               <p className="text-sm font-medium text-[#2E7055] mb-3">
-                01 <span aria-hidden="true" className="mx-1.5">·</span> The Problem
+                03 <span aria-hidden="true" className="mx-1.5">·</span> Why AROHA
               </p>
               <h2 className="font-display text-3xl sm:text-4xl font-bold leading-[1.12] tracking-tight text-[#202722]">
                 Cattle Healthcare Shouldn&apos;t Begin Only When Something Goes Wrong.

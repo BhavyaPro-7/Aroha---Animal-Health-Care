@@ -1,0 +1,224 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Global safety net: deny all reads and writes by default
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() >= 1 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isVerifiedUser() {
+      return isSignedIn() && request.auth.token.email_verified == true;
+    }
+
+    function isOwner(farmerId) {
+      return isSignedIn() && request.auth.uid == farmerId;
+    }
+
+    function isValidOptionalString(data, key, minLen, maxLen) {
+      return !(key in data) || (data[key] is string && data[key].size() >= minLen && data[key].size() <= maxLen);
+    }
+
+    function isValidFarmerProfile(data, farmerId) {
+      return data.keys().hasAll(['ownerUid', 'displayName', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['ownerUid', 'displayName', 'phone', 'village', 'district', 'createdAt', 'updatedAt'])
+        && data.ownerUid is string
+        && isValidId(data.ownerUid)
+        && data.ownerUid == request.auth.uid
+        && data.ownerUid == farmerId
+        && data.displayName is string
+        && data.displayName.size() >= 1
+        && data.displayName.size() <= 100
+        && (!( 'phone' in data ) || (data.phone is string && data.phone.size() >= 10 && data.phone.size() <= 16 && data.phone.matches('^[+0-9\\s()-]{10,16}$')))
+        && isValidOptionalString(data, 'village', 1, 80)
+        && isValidOptionalString(data, 'district', 1, 80)
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidCattle(data, farmerId) {
+      return data.keys().hasAll(['ownerUid', 'name', 'species', 'breed', 'tagId', 'stage', 'createdAt', 'updatedAt'])
+        && data.keys().hasOnly(['ownerUid', 'name', 'species', 'breed', 'tagId', 'stage', 'createdAt', 'updatedAt'])
+        && data.ownerUid is string
+        && isValidId(data.ownerUid)
+        && data.ownerUid == request.auth.uid
+        && data.ownerUid == farmerId
+        && data.name is string
+        && data.name.size() >= 1
+        && data.name.size() <= 60
+        && data.species in ['Cow', 'Buffalo']
+        && data.breed is string
+        && data.breed.size() >= 1
+        && data.breed.size() <= 60
+        && data.tagId is string
+        && data.tagId.size() >= 2
+        && data.tagId.size() <= 32
+        && data.tagId.matches('^[a-zA-Z0-9\\-]+$')
+        && data.stage is string
+        && data.stage.size() >= 1
+        && data.stage.size() <= 40
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    function isValidBooking(data, farmerId) {
+      return data.keys().hasAll([
+          'ownerUid', 'referenceCode', 'serviceId', 'serviceTitle',
+          'cattleId', 'cattleLabel', 'cattleTag', 'dateISO', 'dateLabel',
+          'timeSlot', 'farmerName', 'phone', 'village', 'district',
+          'notes', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.keys().hasOnly([
+          'ownerUid', 'referenceCode', 'serviceId', 'serviceTitle',
+          'cattleId', 'cattleLabel', 'cattleTag', 'dateISO', 'dateLabel',
+          'timeSlot', 'farmerName', 'phone', 'village', 'district',
+          'notes', 'status', 'createdAt', 'updatedAt'
+        ])
+        && data.ownerUid is string
+        && isValidId(data.ownerUid)
+        && data.ownerUid == request.auth.uid
+        && data.ownerUid == farmerId
+        && data.referenceCode is string
+        && data.referenceCode.size() >= 4
+        && data.referenceCode.size() <= 20
+        && data.referenceCode.matches('^ARH-[0-9]{4,8}$')
+        && data.serviceId in ['urgent-visit', 'preventive-checkup', 'follow-up', 'animal-registration']
+        && data.serviceTitle is string
+        && data.serviceTitle.size() >= 2
+        && data.serviceTitle.size() <= 60
+        && data.cattleId is string
+        && isValidId(data.cattleId)
+        && data.cattleLabel is string
+        && data.cattleLabel.size() >= 2
+        && data.cattleLabel.size() <= 100
+        && data.cattleTag is string
+        && data.cattleTag.size() >= 2
+        && data.cattleTag.size() <= 32
+        && data.cattleTag.matches('^[a-zA-Z0-9\\-]+$')
+        && data.dateISO is string
+        && data.dateISO.size() == 10
+        && data.dateISO.matches('^[0-9]{4}-[0-9]{2}-[0-9]{2}$')
+        && data.dateLabel is string
+        && data.dateLabel.size() >= 3
+        && data.dateLabel.size() <= 40
+        && data.timeSlot in ['07:00 AM – 10:00 AM', '11:00 AM – 02:00 PM', '03:00 PM – 06:00 PM']
+        && data.farmerName is string
+        && data.farmerName.size() >= 2
+        && data.farmerName.size() <= 100
+        && data.phone is string
+        && data.phone.size() >= 10
+        && data.phone.size() <= 16
+        && data.phone.matches('^[+0-9\\s()-]{10,16}$')
+        && data.village is string
+        && data.village.size() >= 1
+        && data.village.size() <= 80
+        && data.district is string
+        && data.district.size() >= 1
+        && data.district.size() <= 80
+        && data.notes is string
+        && data.notes.size() <= 500
+        && data.status in ['Scheduled', 'Completed', 'Cancelled']
+        && data.createdAt is timestamp
+        && data.updatedAt is timestamp;
+    }
+
+    match /farmers/{farmerId} {
+      allow get: if isSignedIn() && isValidId(farmerId) && isOwner(farmerId);
+      allow list: if false;
+
+      allow create: if isVerifiedUser()
+        && isValidId(farmerId)
+        && isOwner(farmerId)
+        && isValidFarmerProfile(incoming(), farmerId)
+        && incoming().createdAt == request.time
+        && incoming().updatedAt == request.time;
+
+      allow update: if isVerifiedUser()
+        && isValidId(farmerId)
+        && isOwner(farmerId)
+        && isValidFarmerProfile(incoming(), farmerId)
+        && incoming().ownerUid == existing().ownerUid
+        && incoming().createdAt == existing().createdAt
+        && incoming().updatedAt == request.time
+        && incoming().diff(existing()).affectedKeys().hasOnly(['displayName', 'phone', 'village', 'district', 'updatedAt']);
+
+      allow delete: if false;
+
+      match /cattle/{cattleId} {
+        allow get: if isSignedIn() && isValidId(farmerId) && isValidId(cattleId) && isOwner(farmerId);
+        allow list: if isSignedIn() && isOwner(farmerId) && existing().ownerUid == request.auth.uid;
+
+        allow create: if isVerifiedUser()
+          && isValidId(farmerId)
+          && isValidId(cattleId)
+          && isOwner(farmerId)
+          && isValidCattle(incoming(), farmerId)
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/farmers/$(farmerId));
+
+        allow update: if isVerifiedUser()
+          && isValidId(farmerId)
+          && isValidId(cattleId)
+          && isOwner(farmerId)
+          && isValidCattle(incoming(), farmerId)
+          && incoming().ownerUid == existing().ownerUid
+          && incoming().createdAt == existing().createdAt
+          && incoming().updatedAt == request.time
+          && incoming().diff(existing()).affectedKeys().hasOnly(['name', 'breed', 'stage', 'updatedAt']);
+
+        allow delete: if false;
+      }
+
+      match /bookings/{bookingId} {
+        allow get: if isSignedIn() && isValidId(farmerId) && isValidId(bookingId) && isOwner(farmerId);
+        allow list: if isSignedIn() && isOwner(farmerId) && existing().ownerUid == request.auth.uid;
+
+        allow create: if isVerifiedUser()
+          && isValidId(farmerId)
+          && isValidId(bookingId)
+          && isOwner(farmerId)
+          && isValidBooking(incoming(), farmerId)
+          && incoming().status == 'Scheduled'
+          && incoming().createdAt == request.time
+          && incoming().updatedAt == request.time
+          && exists(/databases/$(database)/documents/farmers/$(farmerId))
+          && exists(/databases/$(database)/documents/farmers/$(farmerId)/cattle/$(incoming().cattleId));
+
+        allow update: if isVerifiedUser()
+          && isValidId(farmerId)
+          && isValidId(bookingId)
+          && isOwner(farmerId)
+          && isValidBooking(incoming(), farmerId)
+          && existing().status == 'Scheduled'
+          && incoming().ownerUid == existing().ownerUid
+          && incoming().createdAt == existing().createdAt
+          && incoming().referenceCode == existing().referenceCode
+          && incoming().updatedAt == request.time
+          && (
+            (incoming().status == 'Scheduled' && incoming().diff(existing()).affectedKeys().hasOnly(['dateISO', 'dateLabel', 'timeSlot', 'updatedAt']))
+            || (incoming().status == 'Completed' && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']))
+            || (incoming().status == 'Cancelled' && incoming().diff(existing()).affectedKeys().hasOnly(['status', 'updatedAt']))
+          );
+
+        allow delete: if false;
+      }
+    }
+  }
+}

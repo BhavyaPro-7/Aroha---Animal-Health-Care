@@ -1,0 +1,261 @@
+{
+  "entities": {
+    "FarmerProfile": {
+      "title": "Farmer Profile",
+      "description": "Authenticated rural cattle farmer profile linked to their Google account.",
+      "type": "object",
+      "properties": {
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 16,
+          "pattern": "^[+0-9\\s()-]{10,16}$"
+        },
+        "village": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "district": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerUid",
+        "displayName",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Cattle": {
+      "title": "Cattle Profile",
+      "description": "Individual cow or buffalo registered by a farmer for continuous care.",
+      "type": "object",
+      "properties": {
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "species": {
+          "type": "string",
+          "enum": [
+            "Cow",
+            "Buffalo"
+          ]
+        },
+        "breed": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 60
+        },
+        "tagId": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 32,
+          "pattern": "^[a-zA-Z0-9\\-]+$"
+        },
+        "stage": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 40
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerUid",
+        "name",
+        "species",
+        "breed",
+        "tagId",
+        "stage",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "Booking": {
+      "title": "Farmer Care Booking",
+      "description": "Scheduled veterinary visit, preventive checkup, follow-up, or record setup for an animal.",
+      "type": "object",
+      "properties": {
+        "ownerUid": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "referenceCode": {
+          "type": "string",
+          "minLength": 4,
+          "maxLength": 20,
+          "pattern": "^ARH-[0-9]{4,8}$"
+        },
+        "serviceId": {
+          "type": "string",
+          "enum": [
+            "urgent-visit",
+            "preventive-checkup",
+            "follow-up",
+            "animal-registration"
+          ]
+        },
+        "serviceTitle": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 60
+        },
+        "cattleId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 128,
+          "pattern": "^[a-zA-Z0-9_\\-]+$"
+        },
+        "cattleLabel": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "cattleTag": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 32,
+          "pattern": "^[a-zA-Z0-9\\-]+$"
+        },
+        "dateISO": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 10,
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+        },
+        "dateLabel": {
+          "type": "string",
+          "minLength": 3,
+          "maxLength": 40
+        },
+        "timeSlot": {
+          "type": "string",
+          "enum": [
+            "07:00 AM – 10:00 AM",
+            "11:00 AM – 02:00 PM",
+            "03:00 PM – 06:00 PM"
+          ]
+        },
+        "farmerName": {
+          "type": "string",
+          "minLength": 2,
+          "maxLength": 100
+        },
+        "phone": {
+          "type": "string",
+          "minLength": 10,
+          "maxLength": 16,
+          "pattern": "^[+0-9\\s()-]{10,16}$"
+        },
+        "village": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "district": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 80
+        },
+        "notes": {
+          "type": "string",
+          "maxLength": 500
+        },
+        "status": {
+          "type": "string",
+          "enum": [
+            "Scheduled",
+            "Completed",
+            "Cancelled"
+          ]
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "ownerUid",
+        "referenceCode",
+        "serviceId",
+        "serviceTitle",
+        "cattleId",
+        "cattleLabel",
+        "cattleTag",
+        "dateISO",
+        "dateLabel",
+        "timeSlot",
+        "farmerName",
+        "phone",
+        "village",
+        "district",
+        "notes",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    }
+  },
+  "firestore": {
+    "/farmers/{farmerId}": {
+      "schema": {
+        "$ref": "#/entities/FarmerProfile"
+      },
+      "description": "Farmer account profile and default village location metadata."
+    },
+    "/farmers/{farmerId}/cattle/{cattleId}": {
+      "schema": {
+        "$ref": "#/entities/Cattle"
+      },
+      "description": "Individual cow and buffalo profiles owned by the farmer."
+    },
+    "/farmers/{farmerId}/bookings/{bookingId}": {
+      "schema": {
+        "$ref": "#/entities/Booking"
+      },
+      "description": "Scheduled, completed, and cancelled veterinary care bookings for the farmer."
+    }
+  }
+}

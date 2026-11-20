@@ -2,17 +2,17 @@ import { useState } from 'react';
 import { Menu, X } from 'lucide-react';
 
 interface NavbarProps {
-  onPartnerClick: () => void;
+  onBookClick: () => void;
 }
 
 const NAV_LINKS = [
-  { label: 'The Problem', href: '#challenges' },
-  { label: 'Our Approach', href: '#approach' },
-  { label: 'Mission', href: '#workflow' },
-  { label: 'Partner', href: '#partner' },
+  { label: 'Book Care', href: '#book' },
+  { label: 'My Bookings', href: '#bookings' },
+  { label: 'Why AROHA', href: '#challenges' },
+  { label: 'How It Works', href: '#approach' },
 ];
 
-export function Navbar({ onPartnerClick }: NavbarProps) {
+export function Navbar({ onBookClick }: NavbarProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   const handleMobileNav = (href: string) => {
@@ -51,10 +51,10 @@ export function Navbar({ onPartnerClick }: NavbarProps) {
         <div className="flex items-center gap-3 shrink-0">
           <button
             type="button"
-            onClick={onPartnerClick}
+            onClick={onBookClick}
             className="hidden sm:inline-flex items-center justify-center rounded-lg bg-[#173D32] px-5 py-2.5 text-sm font-semibold text-white hover:bg-[#2E7055] transition-colors duration-150 whitespace-nowrap shrink-0 cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#173D32]"
           >
-            Partner With AROHA
+            Book a Visit
           </button>
 
           <button
@@ -87,11 +87,11 @@ export function Navbar({ onPartnerClick }: NavbarProps) {
               type="button"
               onClick={() => {
                 setMobileOpen(false);
-                onPartnerClick();
+                onBookClick();
               }}
               className="mt-3 w-full rounded-lg bg-[#173D32] px-5 py-3 text-sm font-semibold text-white hover:bg-[#2E7055] transition-colors cursor-pointer"
             >
-              Partner With AROHA
+              Book a Visit
             </button>
           </nav>
         </div>
